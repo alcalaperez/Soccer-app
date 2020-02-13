@@ -32,7 +32,6 @@ class _GetShaftsState extends State<TeamView> {
             style: TextStyle(color: Colors.white, fontSize: 20)),
         backgroundColor: Color(0xFF333333),
       ),
-      backgroundColor: Color(0xFF333333),
       body: RefreshIndicator(
         onRefresh: () => _bloc.fetchTeam(),
         child: StreamBuilder<Response<Team>>(
@@ -76,7 +75,6 @@ class TeamList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      backgroundColor: Color(0xFF202020),
       body: ListView.builder(
         itemBuilder: (context, index) {
           return Padding(
@@ -85,30 +83,77 @@ class TeamList extends StatelessWidget {
                 vertical: 1.0,
               ),
               child: InkWell(
-                  onTap: () {
-                    /*Navigator.of(context).push(MaterialPageRoute(
+                onTap: () {
+                  /*Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
                             ShowChuckyJoke(categoryList.categories[index])));*/
-                  },
-                  child: SizedBox(
-                    height: 65,
-                    child: Container(
-                      color: Color(0xFF333333),
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(4, 0, 0, 0),
-                        child: Text(
+                },
+                child: SizedBox(
+                  height: 300,
+                  child: Card(
+                    elevation: 3.0,
+                    color: Colors.white,
+                    margin: EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        new Container(
+                            margin: EdgeInsets.all(10),
+                            height: 190.0,
+                            decoration: new BoxDecoration(
+                                image: new DecorationImage(
+                                    fit: BoxFit.fitHeight,
+                                    image: AssetImage("assets/player.png"))),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Align(
+                                alignment: FractionalOffset.topCenter,
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Padding(
+                                          padding: EdgeInsets.all(10.0),
+                                          child: Text(team.squad[index].position??"Coach",
+                                              style:
+                                              new TextStyle(fontSize: 20))
+                                      ),
+                                      Padding(
+                                          padding: EdgeInsets.all(10.0),
+                                          child: Text(team.squad[index].yearsOld + " years",
+                                            style:
+                                            new TextStyle(fontSize: 20))
+                                      )
+                                    ]
+                                )
+                            ),
+                              Align(
+                                alignment: FractionalOffset.bottomCenter,
+                                child: Padding(
+                                    padding: EdgeInsets.only(bottom: 10.0),
+                                    child: Text(team.squad[index].shirtNumber,style:
+                                    new TextStyle(fontSize: 18))
+                                )
+                            ),
+                          ],
+                        )),
+                        new Text(
                           team.squad[index].name,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w100,
-                              fontFamily: 'Roboto'),
-                          textAlign: TextAlign.left,
+                          style: new TextStyle(
+                              fontSize: 20.0),
                         ),
-                      ),
+                        new Text(
+                          team.squad[index].nationality,
+                          style:
+                              new TextStyle(fontSize: 16),
+                        ),
+                      ],
                     ),
-                  )));
+                  ),
+                ),
+              ));
         },
         itemCount: team.squad.length,
         shrinkWrap: true,

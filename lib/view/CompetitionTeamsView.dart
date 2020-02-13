@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:soccerapp/blocs/CompetitionTeamsBloc.dart';
@@ -35,7 +36,6 @@ class _GetShaftsState extends State<CompetitionTeamsView> {
             style: TextStyle(color: Colors.white, fontSize: 20)),
         backgroundColor: Color(0xFF333333),
       ),
-      backgroundColor: Color(0xFF333333),
       body: RefreshIndicator(
         onRefresh: () => _bloc.fetchTeams(),
         child: StreamBuilder<Response<CompetitionTeams>>(
@@ -47,7 +47,8 @@ class _GetShaftsState extends State<CompetitionTeamsView> {
                   return Loading(loadingMessage: snapshot.data.message);
                   break;
                 case Status.COMPLETED:
-                  return CompetitionTeamsWidget(competition: snapshot.data.data);
+                  return CompetitionTeamsWidget(
+                      competition: snapshot.data.data);
                   break;
                 case Status.ERROR:
                   return Error(
@@ -79,7 +80,6 @@ class CompetitionTeamsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      backgroundColor: Color(0xFF202020),
       body: ListView.builder(
         itemBuilder: (context, index) {
           return Padding(
@@ -90,36 +90,60 @@ class CompetitionTeamsWidget extends StatelessWidget {
               child: InkWell(
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) =>
-                            TeamView(competition.teams[index].id, competition.teams[index].name)));
+                        builder: (context) => TeamView(
+                            competition.teams[index].id,
+                            competition.teams[index].name)));
                   },
                   child: SizedBox(
-                    height: 65,
-                    child: Container(
-                      color: Color(0xFF333333),
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(4, 0, 0, 0),
-                        child: Row(
-                          children: <Widget>[
-                          SvgPicture.network(
-                        competition.teams[index].crestUrl,
-                          placeholderBuilder: (context) => Icon(Icons.error_outline),
-                          height: 48.0, width: 48.0,
-                        ), SizedBox(width: 50),
-                        Text(
-                          competition.teams[index].name,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w100,
-                              fontFamily: 'Roboto'),
-                          textAlign: TextAlign.left,
-                        )],
+                    height: 300,
+                      child: Card(
+                          elevation: 3.0,
+                          color: Colors.white,
+                          margin: EdgeInsets.all(8.0),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Text(competition.teams[index].name, style: TextStyle(fontSize: 20)),
+                              SizedBox(height: 10),
+                                if (competition.teams[index].crestUrl != null &&
+                                competition.teams[index].crestUrl != "" &&
+                                competition.teams[index].crestUrl
+                                    .endsWith('.svg'))
+                                  SvgPicture.network(
+                                    competition.teams[index].crestUrl,
+                                    placeholderBuilder: (context) =>
+                                        Image.asset(
+                                          'assets/noflag.png',
+                                          height: 200,
+                                        ),
+                                    fit: BoxFit.cover,
+                                    height: 200,
+                                  )
+                                else if (competition.teams[index].crestUrl != null &&
+                                    competition.teams[index].crestUrl != "" &&
+                                    !competition.teams[index].crestUrl
+                                        .endsWith('.svg'))
+                                  CachedNetworkImage(
+                                      imageUrl: competition.teams[index].crestUrl,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: imageProvider,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                ))
+                                else
+                                  Image.asset(
+                                    'assets/noflag.png',
+                                    height: 200,
+                                  ),
+                              ],
                         ),
                       ),
                     ),
-                  )));
+                  ));
         },
         itemCount: competition.teams.length,
         shrinkWrap: true,

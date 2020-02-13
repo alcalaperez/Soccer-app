@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:soccerapp/models/CompetitionTeams.dart';
-import 'package:soccerapp/models/Team.dart';
 import 'package:soccerapp/networking/Response.dart';
 import 'package:soccerapp/repository/CompetitionTeamsRepository.dart';
 

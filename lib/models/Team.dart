@@ -107,6 +107,8 @@ class Squad {
   String countryOfBirth;
   String nationality;
   String role;
+  String shirtNumber;
+  String yearsOld;
 
   Squad(
       {this.id,
@@ -115,7 +117,9 @@ class Squad {
         this.dateOfBirth,
         this.countryOfBirth,
         this.nationality,
-        this.role});
+        this.role,
+      this.shirtNumber,
+        this.yearsOld});
 
   Squad.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -125,6 +129,12 @@ class Squad {
     countryOfBirth = json['countryOfBirth'];
     nationality = json['nationality'];
     role = json['role'];
+    shirtNumber = json['shirtNumber'].toString();
+    if(shirtNumber=="null") {
+      shirtNumber="Not defined";
+    }
+    yearsOld = (new DateTime.now().year - int.tryParse(dateOfBirth.split("-").first)).toString();
+
   }
 
   Map<String, dynamic> toJson() {
@@ -136,6 +146,7 @@ class Squad {
     data['countryOfBirth'] = this.countryOfBirth;
     data['nationality'] = this.nationality;
     data['role'] = this.role;
+    data['shirtNumber'] = this.shirtNumber;
     return data;
   }
 }

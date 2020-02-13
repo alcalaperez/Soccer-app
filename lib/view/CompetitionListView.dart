@@ -73,7 +73,7 @@ class CompetitionListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      backgroundColor: Color(0xFF202020),
+      backgroundColor: Colors.white,
       body: ListView.builder(
         itemBuilder: (context, index) {
           return Padding(
@@ -90,16 +90,14 @@ class CompetitionListWidget extends StatelessWidget {
                   child: SizedBox(
                     height: 65,
                     child: Container(
-                      color: Color(0xFF333333),
                       alignment: Alignment.center,
                         child: Padding(
                         padding: EdgeInsets.fromLTRB(4, 0, 0, 0),
                         child: Text(
                           competition.competitions[index].name + " - " + competition.competitions[index].area.name,
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 20,
-                              fontWeight: FontWeight.w100,
                               fontFamily: 'Roboto'),
                           textAlign: TextAlign.left,
                         ),
