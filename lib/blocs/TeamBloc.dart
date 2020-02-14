@@ -1,42 +1,53 @@
-
-import 'dart:async';
-
+import 'package:rxdart/rxdart.dart';
+import 'package:soccerapp/models/Country.dart';
 import 'package:soccerapp/models/Team.dart';
 import 'package:soccerapp/networking/Response.dart';
-import 'package:soccerapp/repository/TeamRepository.dart';
+import 'package:soccerapp/repository/CountryRepository.dart';
+import 'package:soccerapp/repository/SoccerRepository.dart';
 
 class TeamBloc {
-  TeamRepository _teamRepository;
-  StreamController _teamController;
+  SoccerRepository _soccerRepository;
+  CountryRepository _countryRepository;
 
-  StreamSink<Response<Team>> get teamListSink =>
-      _teamController.sink;
+  final PublishSubject<Response<Team>> _subjectTeam = PublishSubject<Response<Team>>();
 
-  Stream<Response<Team>> get teamListStream =>
-      _teamController.stream;
-
-  int teamId;
-
-  TeamBloc(int teamId) {
-    _teamController = StreamController<Response<Team>>();
-    _teamRepository = TeamRepository();
-    this.teamId = teamId;
-    fetchTeam();
+  TeamBloc() {
+    _soccerRepository = SoccerRepository();
+    _countryRepository = CountryRepository();
   }
 
-  fetchTeam() async {
-    teamListSink.add(Response.loading('Getting Team.'));
+  fetchTeam(int teamId) async {
+    _subjectTeam.sink.add(Response.loading('Getting Teams.'));
     try {
-      Team teams =
-      await _teamRepository.fetchTeam(teamId);
-      teamListSink.add(Response.completed(teams));
+      Team team = await _soccerRepository.fetchTeam(teamId);
+      _subjectTeam.sink.add(Response.loading('Loading Flags.'));
+      for(Squad squad in team.squad) {
+        try {
+          if(squad.nationality!=null) {
+            Country country = await _countryRepository.fetchCountryFlag(
+                squad.nationality
+                    .split(" ")
+                    .first
+                    .split("’")
+                    .last);
+            if (country.flag != null) {
+              squad.flag = country.flag;
+            }
+          }
+        } catch(e) {
+          print(e.toString());
+        }
+      }
+      _subjectTeam.sink.add(Response.completed(team));
     } catch (e) {
-      teamListSink.add(Response.error(e.toString()));
+      _subjectTeam.sink.add(Response.error(e.toString()));
       print(e);
     }
   }
-
   dispose() {
-    _teamController?.close();
+    _subjectTeam.close();
   }
+
+  PublishSubject<Response<Team>> get subject => _subjectTeam;
 }
+

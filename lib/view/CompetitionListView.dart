@@ -7,16 +7,15 @@ import 'CompetitionTeamsView.dart';
 
 class CompetitionListView extends StatefulWidget {
   @override
-  _GetShaftsState createState() => _GetShaftsState();
+  _CompetitionListState createState() => _CompetitionListState();
 }
 
-class _GetShaftsState extends State<CompetitionListView> {
-  CompetitionListBloc _bloc;
+class _CompetitionListState extends State<CompetitionListView> {
 
   @override
   void initState() {
     super.initState();
-    _bloc = CompetitionListBloc();
+    bloc.fetchCompetition();
   }
 
   @override
@@ -28,25 +27,27 @@ class _GetShaftsState extends State<CompetitionListView> {
         title: Text('Competitions',
             style: TextStyle(color: Colors.white, fontSize: 20)),
         backgroundColor: Color(0xFF333333),
+
       ),
       backgroundColor: Color(0xFF333333),
       body: RefreshIndicator(
-        onRefresh: () => _bloc.fetchCompetition(),
+        onRefresh: () => bloc.fetchCompetition(),
         child: StreamBuilder<Response<CompetitionList>>(
-          stream: _bloc.competitionsListStream,
-          builder: (context, snapshot) {
+          stream: bloc.subject.stream,
+          builder: (context, AsyncSnapshot<Response<CompetitionList>> snapshot) {
             if (snapshot.hasData) {
               switch (snapshot.data.status) {
                 case Status.LOADING:
                   return Loading(loadingMessage: snapshot.data.message);
                   break;
                 case Status.COMPLETED:
-                  return CompetitionListWidget(competition: snapshot.data.data);
+                  return CompetitionListWidget(
+                      competition: snapshot.data.data);
                   break;
                 case Status.ERROR:
                   return Error(
                     errorMessage: snapshot.data.message,
-                    onRetryPressed: () => _bloc.fetchCompetition(),
+                    onRetryPressed: () => bloc.fetchCompetition(),
                   );
                   break;
               }
@@ -60,7 +61,7 @@ class _GetShaftsState extends State<CompetitionListView> {
 
   @override
   void dispose() {
-    _bloc.dispose();
+    bloc.dispose();
     super.dispose();
   }
 }
@@ -74,36 +75,53 @@ class CompetitionListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Scaffold(
       backgroundColor: Colors.white,
-      body: ListView.builder(
+      body: ListView.separated(
+        separatorBuilder: (context, index) {
+          return Divider(thickness: 2, color: Color(0xFF333333));
+        },
         itemBuilder: (context, index) {
-          return Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 0.0,
-                vertical: 1.0,
-              ),
-              child: InkWell(
+          return InkWell(
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
                             CompetitionTeamsView(competition.competitions[index].id, competition.competitions[index].name)));
                   },
                   child: SizedBox(
-                    height: 65,
                     child: Container(
                       alignment: Alignment.center,
                         child: Padding(
-                        padding: EdgeInsets.fromLTRB(4, 0, 0, 0),
-                        child: Text(
-                          competition.competitions[index].name + " - " + competition.competitions[index].area.name,
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontFamily: 'Roboto'),
-                          textAlign: TextAlign.left,
-                        ),
+                        padding: EdgeInsets.fromLTRB(0, 4, 0, 4),
+                        child: Column(
+                          children: <Widget>[
+                            Text(
+                              competition.competitions[index].name + " - " + competition.competitions[index].area.name,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 28,
+                                  fontFamily: 'Roboto'),
+                            ),
+                            Text(
+                              "From " + competition.competitions[index].currentSeason.startDate + " to " + competition.competitions[index].currentSeason.endDate,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontFamily: 'Roboto'),
+                            ),
+                            Text(
+                              "Last update from the API: " + competition.competitions[index].lastUpdated.split("T").first,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontFamily: 'Roboto'),
+                            ),
+                          ],
+                        )
                       ),
                     ),
-                  )));
+                  ));
         },
         itemCount: competition.competitions.length,
         shrinkWrap: true,

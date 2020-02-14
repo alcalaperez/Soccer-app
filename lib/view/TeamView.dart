@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:soccerapp/blocs/TeamBloc.dart';
 import 'package:soccerapp/models/Team.dart';
 import 'package:soccerapp/networking/Response.dart';
@@ -10,16 +11,16 @@ class TeamView extends StatefulWidget {
   const TeamView(this.selectedTeam, this.teamName);
 
   @override
-  _GetShaftsState createState() => _GetShaftsState();
+  _TeamViewState createState() => _TeamViewState();
 }
 
-class _GetShaftsState extends State<TeamView> {
-  TeamBloc _bloc;
+class _TeamViewState extends State<TeamView> {
+  final bloc = TeamBloc();
 
   @override
   void initState() {
     super.initState();
-    _bloc = TeamBloc(widget.selectedTeam);
+    bloc.fetchTeam(widget.selectedTeam);
   }
 
   @override
@@ -31,28 +32,32 @@ class _GetShaftsState extends State<TeamView> {
         title: Text('Players from ' + widget.teamName,
             style: TextStyle(color: Colors.white, fontSize: 20)),
         backgroundColor: Color(0xFF333333),
+          leading: IconButton(icon:Icon(Icons.arrow_back),
+            onPressed:() => Navigator.pop(context, false),
+          )
       ),
+      backgroundColor: Color(0xFF333333),
       body: RefreshIndicator(
-        onRefresh: () => _bloc.fetchTeam(),
+        onRefresh: () => bloc.fetchTeam(widget.selectedTeam),
         child: StreamBuilder<Response<Team>>(
-          stream: _bloc.teamListStream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              switch (snapshot.data.status) {
-                case Status.LOADING:
-                  return Loading(loadingMessage: snapshot.data.message);
-                  break;
-                case Status.COMPLETED:
-                  return TeamList(team: snapshot.data.data);
-                  break;
-                case Status.ERROR:
-                  return Error(
-                    errorMessage: snapshot.data.message,
-                    onRetryPressed: () => _bloc.fetchTeam(),
-                  );
-                  break;
-              }
-            }
+          stream: bloc.subject.stream,
+          builder: (context, AsyncSnapshot<Response<Team>> snapshot) {
+           if (snapshot.hasData) {
+             switch (snapshot.data.status) {
+               case Status.LOADING:
+                 return Loading(loadingMessage: snapshot.data.message);
+                 break;
+               case Status.COMPLETED:
+                 return TeamList(team: snapshot.data.data);
+                 break;
+               case Status.ERROR:
+                 return Error(
+                   errorMessage: snapshot.data.message,
+                   onRetryPressed: () => bloc.fetchTeam(widget.selectedTeam),
+                 );
+                 break;
+             }
+           }
             return Container();
           },
         ),
@@ -62,7 +67,7 @@ class _GetShaftsState extends State<TeamView> {
 
   @override
   void dispose() {
-    _bloc.dispose();
+    bloc.dispose();
     super.dispose();
   }
 }
@@ -88,18 +93,16 @@ class TeamList extends StatelessWidget {
                         builder: (context) =>
                             ShowChuckyJoke(categoryList.categories[index])));*/
                 },
-                child: SizedBox(
-                  height: 300,
                   child: Card(
-                    elevation: 3.0,
+                    elevation: 5.0,
                     color: Colors.white,
                     margin: EdgeInsets.all(8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         new Container(
-                            margin: EdgeInsets.all(10),
-                            height: 190.0,
+                            margin: EdgeInsets.fromLTRB(5,5,5,0),
+                            height: 200.0,
                             decoration: new BoxDecoration(
                                 image: new DecorationImage(
                                     fit: BoxFit.fitHeight,
@@ -116,16 +119,28 @@ class TeamList extends StatelessWidget {
                                     children: <Widget>[
                                       Padding(
                                           padding: EdgeInsets.all(10.0),
-                                          child: Text(team.squad[index].position??"Coach",
+                                          child: Text(team.squad[index].yearsOld + " years",
                                               style:
-                                              new TextStyle(fontSize: 20))
+                                              new TextStyle(fontSize: 20, fontFamily: 'Roboto'))
                                       ),
+                                      if(team.squad[index].flag!=null)
                                       Padding(
                                           padding: EdgeInsets.all(10.0),
-                                          child: Text(team.squad[index].yearsOld + " years",
-                                            style:
-                                            new TextStyle(fontSize: 20))
-                                      )
+                                          child: SvgPicture.network(
+                                              team.squad[index].flag,
+                                              semanticsLabel: 'Flag',
+                                              placeholderBuilder: (context) =>
+                                                Image.asset(
+                                                  'assets/noflag.png',
+                                                  width: 50,
+                                                ),
+                                              width: 50,
+                                          )
+                                      ) else
+                                        Image.asset(
+                                          'assets/noflag.png',
+                                          width: 50,
+                                        ),
                                     ]
                                 )
                             ),
@@ -134,26 +149,49 @@ class TeamList extends StatelessWidget {
                                 child: Padding(
                                     padding: EdgeInsets.only(bottom: 10.0),
                                     child: Text(team.squad[index].shirtNumber,style:
-                                    new TextStyle(fontSize: 18))
+                                    new TextStyle(fontSize: 22))
                                 )
                             ),
                           ],
                         )),
-                        new Text(
-                          team.squad[index].name,
-                          style: new TextStyle(
-                              fontSize: 20.0),
-                        ),
-                        new Text(
-                          team.squad[index].nationality,
-                          style:
-                              new TextStyle(fontSize: 16),
-                        ),
-                      ],
+                         Container(
+                             decoration: BoxDecoration(
+                               color: Color(0xFF333333),
+                               boxShadow: [
+                                 BoxShadow(
+                                   color: Color.fromARGB(100, 0, 0, 0),
+                                   blurRadius: 5,
+                                 ),
+                               ],
+                             ),
+                           child: Row(
+                             mainAxisSize: MainAxisSize.max,
+                             mainAxisAlignment: MainAxisAlignment.center,
+                             children: <Widget>[
+                               Column(
+                                 children: <Widget>[
+                                   SizedBox(height: 10),
+                                   Text(team.squad[index].name,
+                                       style: new TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Roboto')
+                                   ),
+                                   SizedBox(height: 5),
+                                   Text(team.squad[index].position??"Coach",
+                                       style: new TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Roboto')
+                                   ),
+                                   SizedBox(height: 5),
+                                   Text(team.squad[index].nationality,
+                                       style: new TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Roboto')
+                                   ),
+                                   SizedBox(height: 10),
+                                 ],
+                               )
+                             ],
+                           ),
+                      )],
                     ),
                   ),
                 ),
-              ));
+              );
         },
         itemCount: team.squad.length,
         shrinkWrap: true,

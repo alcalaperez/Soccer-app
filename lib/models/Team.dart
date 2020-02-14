@@ -109,6 +109,7 @@ class Squad {
   String role;
   String shirtNumber;
   String yearsOld;
+  String flag;
 
   Squad(
       {this.id,
@@ -131,9 +132,15 @@ class Squad {
     role = json['role'];
     shirtNumber = json['shirtNumber'].toString();
     if(shirtNumber=="null") {
-      shirtNumber="Not defined";
+      shirtNumber="No number";
     }
-    yearsOld = (new DateTime.now().year - int.tryParse(dateOfBirth.split("-").first)).toString();
+    if(dateOfBirth!=null) {
+      yearsOld = (new DateTime.now().year - int.tryParse(dateOfBirth
+          .split("-")
+          .first)).toString();
+    } else {
+      yearsOld = "No birth info";
+    }
 
   }
 

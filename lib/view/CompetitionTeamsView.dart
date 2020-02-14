@@ -14,16 +14,16 @@ class CompetitionTeamsView extends StatefulWidget {
   const CompetitionTeamsView(this.selectedCompetition, this.competitionName);
 
   @override
-  _GetShaftsState createState() => _GetShaftsState();
+  _CompetitionTeamsState createState() => _CompetitionTeamsState();
 }
 
-class _GetShaftsState extends State<CompetitionTeamsView> {
-  CompetitionsTeamsBloc _bloc;
+class _CompetitionTeamsState extends State<CompetitionTeamsView> {
+  final bloc = CompetitionsTeamsBloc();
 
   @override
   void initState() {
     super.initState();
-    _bloc = CompetitionsTeamsBloc(widget.selectedCompetition);
+    bloc.fetchTeams(widget.selectedCompetition);
   }
 
   @override
@@ -35,12 +35,16 @@ class _GetShaftsState extends State<CompetitionTeamsView> {
         title: Text('Teams from ' + widget.competitionName,
             style: TextStyle(color: Colors.white, fontSize: 20)),
         backgroundColor: Color(0xFF333333),
+          leading: IconButton(icon:Icon(Icons.arrow_back),
+            onPressed:() => Navigator.pop(context, false),
+          )
       ),
+      backgroundColor: Color(0xFF333333),
       body: RefreshIndicator(
-        onRefresh: () => _bloc.fetchTeams(),
+        onRefresh: () => bloc.fetchTeams(widget.selectedCompetition),
         child: StreamBuilder<Response<CompetitionTeams>>(
-          stream: _bloc.competitionsTeamsStream,
-          builder: (context, snapshot) {
+          stream: bloc.subject.stream,
+          builder: (context, AsyncSnapshot<Response<CompetitionTeams>> snapshot) {
             if (snapshot.hasData) {
               switch (snapshot.data.status) {
                 case Status.LOADING:
@@ -53,7 +57,7 @@ class _GetShaftsState extends State<CompetitionTeamsView> {
                 case Status.ERROR:
                   return Error(
                     errorMessage: snapshot.data.message,
-                    onRetryPressed: () => _bloc.fetchTeams(),
+                    onRetryPressed: () => bloc.fetchTeams(widget.selectedCompetition),
                   );
                   break;
               }
@@ -67,7 +71,7 @@ class _GetShaftsState extends State<CompetitionTeamsView> {
 
   @override
   void dispose() {
-    _bloc.dispose();
+    bloc.dispose();
     super.dispose();
   }
 }
@@ -94,8 +98,6 @@ class CompetitionTeamsWidget extends StatelessWidget {
                             competition.teams[index].id,
                             competition.teams[index].name)));
                   },
-                  child: SizedBox(
-                    height: 300,
                       child: Card(
                           elevation: 3.0,
                           color: Colors.white,
@@ -103,8 +105,8 @@ class CompetitionTeamsWidget extends StatelessWidget {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
-                                Text(competition.teams[index].name, style: TextStyle(fontSize: 20)),
-                              SizedBox(height: 10),
+                                Text(competition.teams[index].name, style: TextStyle(fontSize: 20, fontFamily: 'Roboto')),
+                               SizedBox(height: 10),
                                 if (competition.teams[index].crestUrl != null &&
                                 competition.teams[index].crestUrl != "" &&
                                 competition.teams[index].crestUrl
@@ -139,11 +141,12 @@ class CompetitionTeamsWidget extends StatelessWidget {
                                     'assets/noflag.png',
                                     height: 200,
                                   ),
+                                SizedBox(height: 10),
                               ],
                         ),
                       ),
                     ),
-                  ));
+                  );
         },
         itemCount: competition.teams.length,
         shrinkWrap: true,

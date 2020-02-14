@@ -1,40 +1,34 @@
-
-import 'dart:async';
-
+import 'package:rxdart/rxdart.dart';
 import 'package:soccerapp/models/CompetitionList.dart';
 import 'package:soccerapp/networking/Response.dart';
-import 'package:soccerapp/repository/CompetitionListRepository.dart';
+import 'package:soccerapp/repository/SoccerRepository.dart';
 
 class CompetitionListBloc {
-  CompetitionRepository _competitionRepository;
-  StreamController _competitionsController;
+  SoccerRepository _soccerRepository;
 
-  StreamSink<Response<CompetitionList>> get competitionsListSink =>
-      _competitionsController.sink;
-
-  Stream<Response<CompetitionList>> get competitionsListStream =>
-      _competitionsController.stream;
+  final PublishSubject<Response<CompetitionList>> _subject = PublishSubject<Response<CompetitionList>>();
 
   CompetitionListBloc() {
-    _competitionsController = StreamController<Response<CompetitionList>>();
-    _competitionRepository = CompetitionRepository();
-    fetchCompetition();
+    _soccerRepository = SoccerRepository();
   }
 
   fetchCompetition() async {
-    competitionsListSink.add(Response.loading('Getting competitions.'));
+    _subject.sink.add(Response.loading('Getting Competitions.'));
     try {
-      CompetitionList competition =
-      await _competitionRepository.fetchCompetitions();
-      //competition.competitions.removeWhere((value) => !availableCompetitionsForFree.contains(value.id));
-      competitionsListSink.add(Response.completed(competition));
+      CompetitionList competitions = await _soccerRepository.fetchCompetitions();
+      _subject.sink.add(Response.completed(competitions));
     } catch (e) {
-      competitionsListSink.add(Response.error(e.toString()));
+      _subject.sink.add(Response.error(e.toString()));
       print(e);
     }
   }
 
   dispose() {
-    _competitionsController?.close();
+    _subject.close();
   }
+
+  PublishSubject<Response<CompetitionList>> get subject => _subject;
+
 }
+
+final bloc = CompetitionListBloc();
