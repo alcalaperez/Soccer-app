@@ -107,9 +107,14 @@ class CompetitionTeamsWidget extends StatelessWidget {
                               children: <Widget>[
                                 Text(competition.teams[index].name, style: TextStyle(fontSize: 20, fontFamily: 'Roboto')),
                                SizedBox(height: 10),
-                                if (competition.teams[index].crestUrl != null &&
-                                competition.teams[index].crestUrl != "" &&
-                                competition.teams[index].crestUrl
+                                if(competition.teams[index].crestUrl == null
+                                    || competition.teams[index].crestUrl == ""
+                                    || competition.teams[index].crestUrl == "null")
+                                    Image.asset(
+                                      'assets/noflag.png',
+                                      height: 200,
+                                    )
+                                else if (competition.teams[index].crestUrl
                                     .endsWith('.svg'))
                                   SvgPicture.network(
                                     competition.teams[index].crestUrl,
@@ -121,21 +126,21 @@ class CompetitionTeamsWidget extends StatelessWidget {
                                     fit: BoxFit.cover,
                                     height: 200,
                                   )
-                                else if (competition.teams[index].crestUrl != null &&
-                                    competition.teams[index].crestUrl != "" &&
-                                    !competition.teams[index].crestUrl
+                                else if (!competition.teams[index].crestUrl
                                         .endsWith('.svg'))
                                   CachedNetworkImage(
+                                      height: 200,
+                                      placeholder: (context, url) => Image.asset(
+                                        'assets/noflag.png',
+                                        height: 200,
+                                      ),
+                                      errorWidget: (context, url, error) => Image.asset(
+                                        'assets/noflag.png',
+                                        height: 200,
+                                      ),
                                       imageUrl: competition.teams[index].crestUrl,
-                                      imageBuilder: (context, imageProvider) =>
-                                          Container(
-                                              decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                  image: imageProvider,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                ))
+
+                                )
                                 else
                                   Image.asset(
                                     'assets/noflag.png',
