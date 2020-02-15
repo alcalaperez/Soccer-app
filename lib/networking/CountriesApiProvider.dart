@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'CustomException.dart';
 
-class CountiesApiProvider {
+class CountriesApiProvider {
   final String _baseUrl = "https://restcountries.eu/rest/v2/";
 
   Future<dynamic> get(String url) async {

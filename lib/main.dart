@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:soccerapp/models/CompetitionList.dart';
 import 'package:soccerapp/view/CompetitionListView.dart';
-import 'package:soccerapp/view/TeamView.dart';
 
 void main() => runApp(MyApp());
 

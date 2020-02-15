@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'CustomException.dart';
 
-class ApiProvider {
+class SoccerApiProvider {
   final String _baseUrl = "https://api.football-data.org/v2/";
 
   Future<dynamic> get(String url) async {
