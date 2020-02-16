@@ -30,21 +30,22 @@ class _CompetitionTeamsState extends State<CompetitionTeamsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0.0,
-        automaticallyImplyLeading: false,
-        title: Text('Teams from ' + widget.competitionName,
-            style: TextStyle(color: Colors.white, fontSize: 20)),
-        backgroundColor: Color(0xFF333333),
-          leading: IconButton(icon:Icon(Icons.arrow_back),
-            onPressed:() => Navigator.pop(context, false),
-          )
-      ),
+          elevation: 0.0,
+          automaticallyImplyLeading: false,
+          title: Text('Teams from ' + widget.competitionName,
+              style: TextStyle(color: Colors.white, fontSize: 20)),
+          backgroundColor: Color(0xFF333333),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context, false),
+          )),
       backgroundColor: Color(0xFF333333),
       body: RefreshIndicator(
         onRefresh: () => bloc.fetchTeams(widget.selectedCompetition),
         child: StreamBuilder<Response<CompetitionTeams>>(
           stream: bloc.subject.stream,
-          builder: (context, AsyncSnapshot<Response<CompetitionTeams>> snapshot) {
+          builder:
+              (context, AsyncSnapshot<Response<CompetitionTeams>> snapshot) {
             if (snapshot.hasData) {
               switch (snapshot.data.status) {
                 case Status.LOADING:
@@ -57,8 +58,11 @@ class _CompetitionTeamsState extends State<CompetitionTeamsView> {
                 case Status.ERROR:
                   return Error(
                     errorMessage: snapshot.data.message,
-                    onRetryPressed: () => bloc.fetchTeams(widget.selectedCompetition),
+                    onRetryPressed: () =>
+                        bloc.fetchTeams(widget.selectedCompetition),
                   );
+                  break;
+                case Status.LOADING_PROGRESS:
                   break;
               }
             }
@@ -87,71 +91,68 @@ class CompetitionTeamsWidget extends StatelessWidget {
       body: ListView.builder(
         itemBuilder: (context, index) {
           return Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 0.0,
-                vertical: 1.0,
-              ),
-              child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => TeamView(
-                            competition.teams[index].id,
-                            competition.teams[index].name)));
-                  },
-                      child: Card(
-                          elevation: 3.0,
-                          color: Colors.white,
-                          margin: EdgeInsets.all(8.0),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Text(competition.teams[index].name, style: TextStyle(fontSize: 20, fontFamily: 'Roboto')),
-                               SizedBox(height: 10),
-                                if(competition.teams[index].crestUrl == null
-                                    || competition.teams[index].crestUrl == ""
-                                    || competition.teams[index].crestUrl == "null")
-                                    Image.asset(
-                                      'assets/noflag.png',
-                                      height: 200,
-                                    )
-                                else if (competition.teams[index].crestUrl
-                                    .endsWith('.svg'))
-                                  SvgPicture.network(
-                                    competition.teams[index].crestUrl,
-                                    placeholderBuilder: (context) =>
-                                        Image.asset(
-                                          'assets/noflag.png',
-                                          height: 200,
-                                        ),
-                                    fit: BoxFit.cover,
-                                    height: 200,
-                                  )
-                                else if (!competition.teams[index].crestUrl
-                                        .endsWith('.svg'))
-                                  CachedNetworkImage(
-                                      height: 200,
-                                      placeholder: (context, url) => Image.asset(
-                                        'assets/noflag.png',
-                                        height: 200,
-                                      ),
-                                      errorWidget: (context, url, error) => Image.asset(
-                                        'assets/noflag.png',
-                                        height: 200,
-                                      ),
-                                      imageUrl: competition.teams[index].crestUrl,
-
-                                )
-                                else
-                                  Image.asset(
-                                    'assets/noflag.png',
-                                    height: 200,
-                                  ),
-                                SizedBox(height: 10),
-                              ],
+            padding: EdgeInsets.symmetric(
+              horizontal: 0.0,
+              vertical: 1.0,
+            ),
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => TeamView(competition.teams[index].id,
+                        competition.teams[index].name)));
+              },
+              child: Card(
+                elevation: 3.0,
+                color: Colors.white,
+                margin: EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text(competition.teams[index].name,
+                        style: TextStyle(fontSize: 20, fontFamily: 'Roboto')),
+                    SizedBox(height: 10),
+                    if (competition.teams[index].crestUrl == null ||
+                        competition.teams[index].crestUrl == "" ||
+                        competition.teams[index].crestUrl == "null")
+                      Image.asset(
+                        'assets/noflag.png',
+                        height: 200,
+                      )
+                    else if (competition.teams[index].crestUrl.endsWith('.svg'))
+                      SvgPicture.network(
+                        competition.teams[index].crestUrl,
+                        placeholderBuilder: (context) => Image.asset(
+                          'assets/noflag.png',
+                          height: 200,
                         ),
+                        fit: BoxFit.cover,
+                        height: 200,
+                      )
+                    else if (!competition.teams[index].crestUrl
+                        .endsWith('.svg'))
+                      CachedNetworkImage(
+                        height: 200,
+                        placeholder: (context, url) => Image.asset(
+                          'assets/noflag.png',
+                          height: 200,
+                        ),
+                        errorWidget: (context, url, error) => Image.asset(
+                          'assets/noflag.png',
+                          height: 200,
+                        ),
+                        imageUrl: competition.teams[index].crestUrl,
+                      )
+                    else
+                      Image.asset(
+                        'assets/noflag.png',
+                        height: 200,
                       ),
-                    ),
-                  );
+                    SizedBox(height: 10),
+                  ],
+                ),
+              ),
+            ),
+          );
         },
         itemCount: competition.teams.length,
         shrinkWrap: true,

@@ -2,9 +2,7 @@ class Country {
   String name;
   String flag;
 
-  Country(
-      {this.name,
-        this.flag});
+  Country({this.name, this.flag});
 
   Country.fromJson(List<dynamic> json) {
     name = json.first['name'];

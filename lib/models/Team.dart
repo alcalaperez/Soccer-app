@@ -17,20 +17,20 @@ class Team {
 
   Team(
       {this.id,
-        this.area,
-        this.name,
-        this.shortName,
-        this.tla,
-        this.crestUrl,
-        this.address,
-        this.phone,
-        this.website,
-        this.email,
-        this.founded,
-        this.clubColors,
-        this.venue,
-        this.squad,
-        this.lastUpdated});
+      this.area,
+      this.name,
+      this.shortName,
+      this.tla,
+      this.crestUrl,
+      this.address,
+      this.phone,
+      this.website,
+      this.email,
+      this.founded,
+      this.clubColors,
+      this.venue,
+      this.squad,
+      this.lastUpdated});
 
   Team.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -113,14 +113,14 @@ class Squad {
 
   Squad(
       {this.id,
-        this.name,
-        this.position,
-        this.dateOfBirth,
-        this.countryOfBirth,
-        this.nationality,
-        this.role,
+      this.name,
+      this.position,
+      this.dateOfBirth,
+      this.countryOfBirth,
+      this.nationality,
+      this.role,
       this.shirtNumber,
-        this.yearsOld});
+      this.yearsOld});
 
   Squad.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -131,17 +131,16 @@ class Squad {
     nationality = json['nationality'];
     role = json['role'];
     shirtNumber = json['shirtNumber'].toString();
-    if(shirtNumber=="null") {
-      shirtNumber="No number";
+    if (shirtNumber == "null") {
+      shirtNumber = "No number";
     }
-    if(dateOfBirth!=null) {
-      yearsOld = (new DateTime.now().year - int.tryParse(dateOfBirth
-          .split("-")
-          .first)).toString();
+    if (dateOfBirth != null) {
+      yearsOld =
+          (new DateTime.now().year - int.tryParse(dateOfBirth.split("-").first))
+              .toString();
     } else {
       yearsOld = "No birth info";
     }
-
   }
 
   Map<String, dynamic> toJson() {

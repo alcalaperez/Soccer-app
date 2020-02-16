@@ -8,11 +8,16 @@ class CompetitionTeams {
 
   CompetitionTeams.fromJson(Map<String, dynamic> json) {
     count = json['count'];
-    competition = json['competition'] != null ? new Competition.fromJson(json['competition']) : null;
-    season = json['season'] != null ? new Season.fromJson(json['season']) : null;
+    competition = json['competition'] != null
+        ? new Competition.fromJson(json['competition'])
+        : null;
+    season =
+        json['season'] != null ? new Season.fromJson(json['season']) : null;
     if (json['teams'] != null) {
       teams = new List<Teams>();
-      json['teams'].forEach((v) { teams.add(new Teams.fromJson(v)); });
+      json['teams'].forEach((v) {
+        teams.add(new Teams.fromJson(v));
+      });
     }
   }
 
@@ -40,7 +45,8 @@ class Competition {
   String plan;
   String lastUpdated;
 
-  Competition({this.id, this.area, this.name, this.code, this.plan, this.lastUpdated});
+  Competition(
+      {this.id, this.area, this.name, this.code, this.plan, this.lastUpdated});
 
   Competition.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -125,7 +131,21 @@ class Teams {
   String venue;
   String lastUpdated;
 
-  Teams({this.id, this.area, this.name, this.shortName, this.tla, this.crestUrl, this.address, this.phone, this.website, this.email, this.founded, this.clubColors, this.venue, this.lastUpdated});
+  Teams(
+      {this.id,
+      this.area,
+      this.name,
+      this.shortName,
+      this.tla,
+      this.crestUrl,
+      this.address,
+      this.phone,
+      this.website,
+      this.email,
+      this.founded,
+      this.clubColors,
+      this.venue,
+      this.lastUpdated});
 
   Teams.fromJson(Map<String, dynamic> json) {
     id = json['id'];

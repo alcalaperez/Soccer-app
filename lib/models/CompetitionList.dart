@@ -8,7 +8,9 @@ class CompetitionList {
     count = json['count'];
     if (json['competitions'] != null) {
       competitions = new List<Competitions>();
-      json['competitions'].forEach((v) { competitions.add(new Competitions.fromJson(v)); });
+      json['competitions'].forEach((v) {
+        competitions.add(new Competitions.fromJson(v));
+      });
     }
   }
 
@@ -32,7 +34,15 @@ class Competitions {
   int numberOfAvailableSeasons;
   String lastUpdated;
 
-  Competitions({this.id, this.area, this.name, this.code, this.plan, this.currentSeason, this.numberOfAvailableSeasons, this.lastUpdated});
+  Competitions(
+      {this.id,
+      this.area,
+      this.name,
+      this.code,
+      this.plan,
+      this.currentSeason,
+      this.numberOfAvailableSeasons,
+      this.lastUpdated});
 
   Competitions.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -40,7 +50,9 @@ class Competitions {
     name = json['name'];
     code = json['code'];
     plan = json['plan'];
-    currentSeason = json['currentSeason'] != null ? new CurrentSeason.fromJson(json['currentSeason']) : null;
+    currentSeason = json['currentSeason'] != null
+        ? new CurrentSeason.fromJson(json['currentSeason'])
+        : null;
     numberOfAvailableSeasons = json['numberOfAvailableSeasons'];
     lastUpdated = json['lastUpdated'];
   }

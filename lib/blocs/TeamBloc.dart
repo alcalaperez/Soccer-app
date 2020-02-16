@@ -9,7 +9,8 @@ class TeamBloc {
   SoccerRepository _soccerRepository;
   CountryRepository _countryRepository;
 
-  final PublishSubject<Response<Team>> _subjectTeam = PublishSubject<Response<Team>>();
+  final PublishSubject<Response<Team>> _subjectTeam =
+      PublishSubject<Response<Team>>();
 
   TeamBloc() {
     _soccerRepository = SoccerRepository();
@@ -21,20 +22,23 @@ class TeamBloc {
     try {
       Team team = await _soccerRepository.fetchTeam(teamId);
       _subjectTeam.sink.add(Response.loading('Loading Flags.'));
-      for(Squad squad in team.squad) {
+
+      for (int i = 0; i < team.squad.length; i++) {
+        _subjectTeam.sink.add(Response.loadingProgress(
+            'Flag ' +
+                (i + 1).toString() +
+                ' of ' +
+                team.squad.length.toString(),
+            (i + 1) / team.squad.length));
         try {
-          if(squad.nationality!=null) {
+          if (team.squad[i].nationality != null) {
             Country country = await _countryRepository.fetchCountryFlag(
-                squad.nationality
-                    .split(" ")
-                    .first
-                    .split("’")
-                    .last);
+                team.squad[i].nationality.split(" ").first.split("’").last);
             if (country.flag != null) {
-              squad.flag = country.flag;
+              team.squad[i].flag = country.flag;
             }
           }
-        } catch(e) {
+        } catch (e) {
           print(e.toString());
         }
       }
@@ -44,10 +48,10 @@ class TeamBloc {
       print(e);
     }
   }
+
   dispose() {
     _subjectTeam.close();
   }
 
   PublishSubject<Response<Team>> get subject => _subjectTeam;
 }
-

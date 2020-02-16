@@ -14,7 +14,8 @@ class SoccerRepository {
   }
 
   Future<CompetitionTeams> fetchCompetitionTeams(int competitionId) async {
-    final response = await _provider.get("competitions/" + competitionId.toString() + "/teams");
+    final response = await _provider
+        .get("competitions/" + competitionId.toString() + "/teams");
     return CompetitionTeams.fromJson(response);
   }
 
