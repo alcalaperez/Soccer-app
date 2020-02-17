@@ -5,7 +5,7 @@ import 'package:soccerapp/blocs/CompetitionTeamsBloc.dart';
 import 'package:soccerapp/models/CompetitionTeams.dart';
 import 'package:soccerapp/networking/Response.dart';
 
-import 'TeamView.dart';
+import '../Router.dart';
 
 class CompetitionTeamsView extends StatefulWidget {
   final int selectedCompetition;
@@ -97,9 +97,10 @@ class CompetitionTeamsWidget extends StatelessWidget {
             ),
             child: InkWell(
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => TeamView(competition.teams[index].id,
-                        competition.teams[index].name)));
+                Router.navigator.pushNamed(Router.teamView,
+                    arguments: TeamViewArguments(
+                      selectedTeam: competition.teams[index].id,
+                        teamName: competition.teams[index].name));
               },
               child: Card(
                 elevation: 3.0,

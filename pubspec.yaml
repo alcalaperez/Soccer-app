@@ -27,6 +27,7 @@ dependencies:
   flutter_svg: ^0.17.1
   cached_network_image: ^2.0.0
   rxdart: ^0.23.1
+  auto_route: 0.2.2
 
 dev_dependencies:
   flutter_test:

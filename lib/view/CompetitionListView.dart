@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:soccerapp/Router.dart';
 import 'package:soccerapp/blocs/CompetitionListBloc.dart';
 import 'package:soccerapp/models/CompetitionList.dart';
 import 'package:soccerapp/networking/Response.dart';
 
-import 'CompetitionTeamsView.dart';
 
 class CompetitionListView extends StatefulWidget {
   @override
@@ -82,10 +82,11 @@ class CompetitionListWidget extends StatelessWidget {
         itemBuilder: (context, index) {
           return InkWell(
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => CompetitionTeamsView(
-                        competition.competitions[index].id,
-                        competition.competitions[index].name)));
+                Router.navigator.pushNamed(Router.teamListView,
+                    arguments: CompetitionTeamsViewArguments(
+                        competitionName: competition.competitions[index].name,
+                        selectedCompetition:
+                            competition.competitions[index].id));
               },
               child: SizedBox(
                 child: Container(

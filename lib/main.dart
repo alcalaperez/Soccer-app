@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:soccerapp/view/CompetitionListView.dart';
+
+import 'Router.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,10 +10,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Soccer App',
+      onGenerateRoute: Router.onGenerateRoute,
+      navigatorKey: Router.navigatorKey,
+      initialRoute: Router.mainView,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: CompetitionListView(),
     );
   }
 }
