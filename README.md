@@ -2,6 +2,7 @@
 Follow up the best leagues, teams and players in the world with this info app.
 * BLoC structure
 * RXDart
+* Navigation using router
 * Free API https://api.football-data.org (get a free api key and paste it in lib/networking/SoccerApiProvider.dart)
 * Free countries API https://restcountries.eu where you can search a country and get multiple info (flags image URL's in this case)
 * Working in iOS and Android
